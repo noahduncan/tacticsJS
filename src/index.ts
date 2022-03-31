@@ -61,15 +61,16 @@ function onDocumentKeyDown(event: KeyboardEvent) {
                 unit.mesh.position.x = Math.max(0, unit.mesh.position.x - 1);
                 break;
             case 'ArrowRight':
-                unit.mesh.position.x = Math.min(xTiles, unit.mesh.position.x + 1);
+                unit.mesh.position.x = Math.min(xTiles-1, unit.mesh.position.x + 1);
                 break;
             case 'ArrowDown':
                 unit.mesh.position.y = Math.max(0, unit.mesh.position.y - 1);
                 break;
             case 'ArrowUp':
-                unit.mesh.position.y = Math.min(yTiles, unit.mesh.position.y + 1);
+                unit.mesh.position.y = Math.min(yTiles-1, unit.mesh.position.y + 1);
                 break;
         }
+        unit.mesh.position.z = grid.locations[unit.mesh.position.x][unit.mesh.position.y].height;
     }
     if (!originalPosition.equals(unit.mesh.position)) {
         unit.stats.movement -= 1;
