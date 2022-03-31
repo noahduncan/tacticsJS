@@ -1,5 +1,10 @@
 import * as THREE from 'three';
-import Grid from "./Grid/Grid";
+import * as Grid from "./Grid/Grid";
+import {BasicUnit} from "./Unit/Unit";
+
+declare global {
+    interface Window { grid: Grid.Grid }
+}
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -8,39 +13,25 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-// const geometry = new THREE.BoxGeometry(1,1,0.5);
-// geometry.translate(.5, 0.5, 0.25);
-// const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-// const cube = new THREE.Mesh( geometry, material );
-// scene.add( cube );
-//
-// const geo = new THREE.EdgesGeometry(cube.geometry);
-// const mat = new THREE.LineBasicMaterial( { color: 0x0000000 } );
-// const wireframe = new THREE.LineSegments( geo, mat);
-// cube.add(wireframe);
 const axesHelper = new THREE.AxesHelper(10);
 scene.add(axesHelper);
 
 const xTiles = 10;
 const yTiles = 5;
 const maxHeight = 5;
-const grid = new Grid(xTiles,yTiles,maxHeight);
-for (let x in grid.grid) {
-    let row = grid.grid[x];
-    for (let y in row) {
-        let tile = row[y];
-        tile.mesh.position.x = Number(x);
-        tile.mesh.position.y = Number(y);
-        scene.add(tile.mesh);
-    }
-}
+
+window.grid = Grid.generateRandom(scene, xTiles, yTiles, maxHeight);
+const unit = new BasicUnit(0xff0000);
+scene.add(unit.mesh);
+window.grid.placeUnit(5, 2, unit);
 
 camera.position.x = xTiles / 2;
-camera.position.y = -yTiles / 2;
-camera.position.z = maxHeight * 2;
+camera.position.y = -5;
+camera.position.z = maxHeight * .5;
 
 camera.lookAt(xTiles/2, yTiles/2, maxHeight/2);
 
+window.grid.locations[5][2].mesh.material['transparent'] = false;
 function animate() {
     requestAnimationFrame( animate );
     renderer.render( scene, camera );
