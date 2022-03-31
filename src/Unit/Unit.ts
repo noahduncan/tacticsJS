@@ -42,13 +42,41 @@ class EquipmentSlots {
     feet?: Shoes;
 }
 
-export abstract class Unit {
+type UnitStats = {
+    physicalAttackPower: number;
+    magicAttackPower: number;
+    physicalDefense: number;
+    magicDefense: number;
     movement: number;
-    equipment: EquipmentSlots;
+    jump: number;
+    weight: number;
+}
+
+export abstract class Unit {
+    jump: number;
+    movement: number;
+    equipment: EquipmentSlots = {
+        head: new NoHelmet(),
+        body: new TShirt(),
+        leftArm: new NoWeapon(),
+        rightArm: new NoWeapon(),
+        legs: new BlueJeans(),
+        feet: new AirJordans(),
+    };
     mesh: THREE.Mesh;
+    stats: UnitStats = {
+        physicalAttackPower: 0,
+        magicAttackPower: 0,
+        physicalDefense: 0,
+        magicDefense: 0,
+        movement: 0,
+        jump: 0,
+        weight: 0,
+    };
 
     constructor(color: number) {
-        this.generateMesh(color)
+        this.generateMesh(color);
+        this.updateStats();
     }
 
     private generateMesh(color: number) {
@@ -62,6 +90,18 @@ export abstract class Unit {
         const mat = new THREE.LineBasicMaterial( { color: 0x0000000 } );
         const wireframe = new THREE.LineSegments( geo, mat);
         this.mesh.add(wireframe);
+    }
+
+    updateStats() {
+        this.stats = {
+            physicalAttackPower: Math.max(this.equipment.leftArm.physicalAttack, this.equipment.rightArm.physicalAttack),
+            magicAttackPower: Math.max(this.equipment.leftArm.magicAttack, this.equipment.rightArm.magicAttack),
+            physicalDefense: this.equipment.head.physicalDefense + this.equipment.body.physicalDefense,
+            magicDefense: this.equipment.head.magicDefense + this.equipment.body.magicDefense,
+            movement: this.movement + this.equipment.feet.movement + this.equipment.body.movement + this.equipment.legs.movement,
+            jump: this.jump + this.equipment.feet.jump,
+            weight: this.equipment.head.weight + this.equipment.body.weight + this.equipment.leftArm.weight + this.equipment.rightArm.weight + this.equipment.legs.weight + this.equipment.feet.weight,
+        }
     }
 }
 
@@ -83,9 +123,9 @@ class TShirt extends BaseBodyArmor {
 }
 
 class AirJordans implements Shoes {
-    jump: 2;
-    movement: 1;
-    weight: 1;
+    jump = 2;
+    movement = 1;
+    weight = 1;
 }
 
 class BlueJeans extends BaseLegArmor {
@@ -96,7 +136,7 @@ class BlueJeans extends BaseLegArmor {
 class NoHelmet implements Helmet {
     physicalDefense = 0;
     magicDefense = 0;
-    weight: 0;
+    weight = 0;
 }
 
 class NoWeapon implements Weapon {
@@ -108,6 +148,7 @@ class NoWeapon implements Weapon {
 }
 
 export class BasicUnit extends Unit {
+    jump = 0;
     movement = 10;
     equipment = {
         head: new NoHelmet(),
@@ -117,4 +158,8 @@ export class BasicUnit extends Unit {
         legs: new BlueJeans(),
         feet: new AirJordans(),
     };
+    constructor(color: number) {
+        super(color);
+        this.updateStats();
+    }
 }
