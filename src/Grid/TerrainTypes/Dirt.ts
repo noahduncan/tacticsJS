@@ -1,15 +1,9 @@
 import * as TerrainType from './TerrainType';
-import {Material, MeshBasicMaterial} from "three";
+import {MeshBasicMaterial} from "three";
+import {TransparentMaterialConfig} from "./TerrainType";
 
 const color: number = 0x8B4513;
-const materialConfig = {
-    color: color,
-    polygonOffset: true,
-    polygonOffsetFactor: 1, // positive value pushes polygon further away
-    polygonOffsetUnits: 1,
-    opacity:0.25,
-    transparent: true,
-}
+const materialConfig = new TransparentMaterialConfig(color);
 export default class Dirt implements TerrainType.Terrain {
     material = new MeshBasicMaterial(materialConfig);
     readonly name = TerrainType.Type.Dirt;

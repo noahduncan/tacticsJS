@@ -33,17 +33,18 @@ grid.placeUnit(5, 2, unit);
 
 camera.position.x = xTiles / 2;
 camera.position.y = -5;
-camera.position.z = maxHeight * .5;
+camera.position.z = maxHeight * 1;
 
 camera.lookAt(xTiles/2, yTiles/2, maxHeight/2);
 controls.update();
 
-const locationMaterial = <Material>grid.locations[5][2].mesh.material;
-locationMaterial.transparent = false;
+let locationMaterial = <Material>grid.locations[5][2].mesh.material;
+// locationMaterial.transparent = false;
+// locationMaterial.opacity = 1;
 
 const gui = new GUI();
 const unitFolder = gui.addFolder('Unit');
-unitFolder.add(unit.stats, 'movement', 0, 20, 1).listen();
+unitFolder.add(unit.stats, 'movement', 0, 1000, 1).listen();
 unitFolder.open();
 
 function animate() {
@@ -74,6 +75,11 @@ function onDocumentKeyDown(event: KeyboardEvent) {
     }
     if (!originalPosition.equals(unit.mesh.position)) {
         unit.stats.movement -= 1;
+        locationMaterial.transparent = true;
+        locationMaterial.opacity = 0.25;
+        locationMaterial = <Material>grid.locations[unit.mesh.position.x][unit.mesh.position.y].mesh.material;
+        locationMaterial.transparent = false;
+        locationMaterial.opacity = 1;
     }
 }
 
