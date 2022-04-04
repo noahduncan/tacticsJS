@@ -1,12 +1,12 @@
 import * as THREE from 'three';
-import * as Grid from "./Grid/Grid";
+import * as Map from "./Grid/Map";
 import {BasicUnit, Unit} from "./Unit/Unit";
 import {Material} from "three";
 import {GUI} from 'dat.gui';
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
 declare global {
-    interface Window { grid: Grid.Grid, unit: Unit }
+    interface Window { map: Map.Map, unit: Unit }
 }
 
 const scene = new THREE.Scene();
@@ -26,19 +26,22 @@ const xTiles = 10;
 const yTiles = 5;
 const maxHeight = 5;
 
-const grid = window.grid = Grid.generateRandom(scene, xTiles, yTiles, maxHeight);
+const map = window.map = Map.generateRandom(xTiles, yTiles, maxHeight);
 const unit = window.unit = new BasicUnit(0xff0000);
+Map.render(map, scene);
 scene.add(window.unit.mesh);
-grid.placeUnit(5, 2, unit);
+map.placeUnit(new Map.Coordinate(5, 2), unit);
 
 camera.position.x = xTiles / 2;
 camera.position.y = -5;
 camera.position.z = maxHeight * 1;
 
-camera.lookAt(xTiles/2, yTiles/2, maxHeight/2);
+const target = new THREE.Vector3(xTiles/2, yTiles/2, maxHeight/2);
+camera.lookAt(target);
+controls.target = target
 controls.update();
 
-let locationMaterial = <Material>grid.locations[5][2].mesh.material;
+let locationMaterial = <Material>map.locations[5][2].mesh.material;
 // locationMaterial.transparent = false;
 // locationMaterial.opacity = 1;
 
@@ -55,32 +58,45 @@ function animate() {
 
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event: KeyboardEvent) {
-    let originalPosition = unit.mesh.position.clone();
+    let from = new Map.Coordinate(unit.mesh.position.x, unit.mesh.position.y);
+    let to: Map.Coordinate;
     if (unit.stats.movement > 0) {
         switch (event.key) {
             case 'ArrowLeft':
-                unit.mesh.position.x = Math.max(0, unit.mesh.position.x - 1);
+                to = new Map.Coordinate(Math.max(0, from.x - 1), from.y);
                 break;
             case 'ArrowRight':
-                unit.mesh.position.x = Math.min(xTiles-1, unit.mesh.position.x + 1);
+                to = new Map.Coordinate(Math.min(xTiles-1, from.x + 1), from.y)
                 break;
             case 'ArrowDown':
-                unit.mesh.position.y = Math.max(0, unit.mesh.position.y - 1);
+                to = new Map.Coordinate(from.x, Math.max(0, from.y - 1));
                 break;
             case 'ArrowUp':
-                unit.mesh.position.y = Math.min(yTiles-1, unit.mesh.position.y + 1);
+                to = new Map.Coordinate(from.x, Math.min(yTiles-1, from.y + 1));
                 break;
         }
-        unit.mesh.position.z = grid.locations[unit.mesh.position.x][unit.mesh.position.y].height;
     }
-    if (!originalPosition.equals(unit.mesh.position)) {
-        unit.stats.movement -= 1;
+    if (from != to) {
+        map.moveUnit(from, to);
         locationMaterial.transparent = true;
         locationMaterial.opacity = 0.25;
-        locationMaterial = <Material>grid.locations[unit.mesh.position.x][unit.mesh.position.y].mesh.material;
+        locationMaterial = <Material>map.locations[unit.mesh.position.x][unit.mesh.position.y].mesh.material;
         locationMaterial.transparent = false;
         locationMaterial.opacity = 1;
     }
 }
 
 animate();
+
+/**
+ * Game needs
+ * 1. Initialization / animation handler
+ * 2. Map
+ * 3. Units
+ * 4. Combat System
+ * 5. Scenario management / win conditions
+ * 6. Equipment
+ * 7. Magic System
+ * 8. Story line
+ * 9. UI Manager
+ */

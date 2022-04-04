@@ -10,7 +10,8 @@ import * as TerrainType from './TerrainTypes/TerrainType';
 import Dirt from "./TerrainTypes/Dirt";
 import Grass from "./TerrainTypes/Grass";
 import Snow from "./TerrainTypes/Snow";
-import {BasicUnit, Unit} from "../Unit/Unit";
+import {Unit} from "../Unit/Unit";
+import {Scene} from "three";
 
 class Location {
     x: number;
@@ -51,7 +52,20 @@ function randomProperty(obj: any) {
     return obj[keys[randInt(0, keys.length -1)]];
 }
 
-export class Grid {
+/**
+ * @todo This type may need to move to somewhere more generic, like the UI manager.
+ */
+export class Coordinate {
+    x: number;
+    y: number;
+
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+export class Map {
     locations: Array<Array<Location>> = [];
     width: number;
     length: number;
@@ -60,23 +74,76 @@ export class Grid {
         this.length = length;
     }
 
-    placeUnit(x: number, y: number, unit: Unit|null) {
-        let location = this.locations[x][y];
+    placeUnit(coordinate: Coordinate, unit: Unit|null) {
+        let location = this.locations[coordinate.x][coordinate.y];
         if (location.unit !== null) {
             throw new Error('Cannot place unit, location is already occupied.');
         }
         location.unit = unit;
-        unit.mesh.position.x = x;
-        unit.mesh.position.y = y;
+        unit.mesh.position.x = coordinate.x;
+        unit.mesh.position.y = coordinate.y;
         unit.mesh.position.z = location.height;
+    }
+
+    getLocation(coordinate: Coordinate): Location {
+        return this.locations[coordinate.x][coordinate.y];
+    }
+
+    /**
+     * Move a unit from one coordinate to another.
+     * @todo The inputs for this seem to be better served as locations, not coordinates.
+     * @param from
+     * @param to
+     */
+    moveUnit(from: Coordinate, to: Coordinate): MovementResult {
+        if (this.getLocation(to).unit !== null) {
+            throw new Error('Cannot move unit, target location is not empty.')
+        }
+
+        if (this.getLocation(from).unit === null) {
+            throw new Error('Cannot move unit, no unit to move.');
+        }
+
+        let unit = this.getLocation(from).unit;
+        let xyMovementCost = Math.abs(to.x - from.x) + Math.abs(to.y - from .y);
+        let jumpMovementCost = Math.ceil(Math.abs(this.getLocation(to).height - this.getLocation(from).height));
+
+        let totalMovementCost = xyMovementCost + Math.max(0, jumpMovementCost - unit.jump);
+
+        if (totalMovementCost > unit.stats.movement) {
+            throw new Error('Cannot move unit, not enough movement.');
+        }
+
+        unit.mesh.position.x = to.x;
+        unit.mesh.position.y = to.y;
+        unit.mesh.position.z = this.getLocation(to).height;
+        unit.stats.movement -= totalMovementCost;
+        this.getLocation(to).unit = this.getLocation(from).unit;
+        this.getLocation(from).unit = null;
+
+        return {
+            distanceMoved: {
+                xy: xyMovementCost,
+                z: this.getLocation(to).height - this.getLocation(from).height,
+            },
+            movementUsed: totalMovementCost,
+        }
     }
 }
 
-export function generateRandom(scene: THREE.Scene, width: number, length: number, maxHeight: number): Grid {
-    const grid = new Grid(length, width);
+export type MovementResult = {
+    distanceMoved: {
+        xy: number,
+        z: number,
+    },
+    movementUsed: number,
+}
+
+export function generateRandom(width: number, length: number, maxHeight: number): Map {
+    const map = new Map(length, width);
 
     for (let i = 0; i < width; i++) {
-        grid.locations.push([]);
+        map.locations.push([]);
         for (let j = 0; j < length; j++) {
             let height: number = randInt(1, maxHeight);
             let terrain: TerrainType.Terrain;
@@ -94,10 +161,17 @@ export function generateRandom(scene: THREE.Scene, width: number, length: number
                     throw new Error('Invalid TerrainType.Type requested.');
             }
             const location = new Location(i, j, height, terrain);
-            grid.locations[i].push(location);
-            scene.add(location.mesh);
+            map.locations[i].push(location);
         }
     }
 
-    return grid;
+    return map;
+}
+
+export function render(map: Map, scene: Scene) {
+    for (let row of map.locations) {
+        for (let location of row) {
+            scene.add(location.mesh);
+        }
+    }
 }
