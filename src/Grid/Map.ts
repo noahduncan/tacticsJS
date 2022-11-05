@@ -145,7 +145,7 @@ export function generateRandom(width: number, length: number, maxHeight: number)
     for (let i = 0; i < width; i++) {
         map.locations.push([]);
         for (let j = 0; j < length; j++) {
-            let height: number = randInt(1, maxHeight);
+            let height: number = randInt(1, maxHeight) + 1;
             map.locations[i].push(new Location(i, j, height, randomTerrainType()));
         }
     }
@@ -157,7 +157,7 @@ export function generateRamp(width: number, height: number): Map {
     let length = height * 2;
     const map = new Map(length, width);
 
-    let currentHeight: number = height;
+    let currentHeight: number = height + 1;
     for (let i = 0; i < width; i++) {
         map.locations.push([]);
         for (let j = 0; j < length; j++) {
@@ -182,7 +182,7 @@ export function generate2DRamp(height: number): Map {
         map.locations.push(row);
     }
 
-    let currentHeight: number = 0;
+    let currentHeight: number = 1;
     for (let d = 0; d <= sideLength; d++) {
         map.locations[d][d] = new Location(d, d, currentHeight, randomTerrainType());
         for (let i = d - 1; i >= 0; i--) {
