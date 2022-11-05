@@ -28,7 +28,7 @@ const map = window.map = Map.generate2DRamp(maxHeight);
 const unit = window.unit = new BasicUnit(0xffd008);
 Map.render(map, scene);
 scene.add(window.unit.mesh);
-map.placeUnit(new Map.Coordinate(5, 2), unit);
+map.placeUnit(new Map.Coordinate(Math.round(map.width / 2), Math.round(map.length / 2)), unit);
 
 camera.position.x = map.width / 2;
 camera.position.y = map.length / 2;;
@@ -39,7 +39,7 @@ camera.lookAt(target);
 controls.target = target
 controls.update();
 
-let locationMaterial = <Material>map.locations[5][2].mesh.material;
+let locationMaterial = <Material>map.locations[unit.mesh.position.x][unit.mesh.position.y].mesh.material;
 // locationMaterial.transparent = false;
 // locationMaterial.opacity = 1;
 
