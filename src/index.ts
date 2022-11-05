@@ -31,8 +31,9 @@ scene.add(window.unit.mesh);
 map.placeUnit(new Map.Coordinate(Math.round(map.width / 2), Math.round(map.length / 2)), unit);
 
 camera.position.x = map.width / 2;
-camera.position.y = map.length / 2;;
-camera.position.z = maxHeight * 1;
+camera.position.y = -map.length / 2;
+camera.position.z = maxHeight * 2;
+
 
 const target = new THREE.Vector3(map.width / 2, map.length / 2, maxHeight / 2);
 camera.lookAt(target);
