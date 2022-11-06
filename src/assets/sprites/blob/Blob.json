@@ -1,0 +1,46 @@
+{ "frames": {
+   "Blob-0.aseprite": {
+    "frame": { "x": 0, "y": 0, "w": 46, "h": 28 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 10, "y": 13, "w": 46, "h": 28 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 100
+   },
+   "Blob-1.aseprite": {
+    "frame": { "x": 46, "y": 0, "w": 46, "h": 28 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 10, "y": 13, "w": 46, "h": 28 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 100
+   },
+   "Blob-2.aseprite": {
+    "frame": { "x": 92, "y": 0, "w": 46, "h": 28 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 10, "y": 13, "w": 46, "h": 28 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 100
+   },
+   "Blob-3.aseprite": {
+    "frame": { "x": 138, "y": 0, "w": 46, "h": 28 },
+    "rotated": false,
+    "trimmed": true,
+    "spriteSourceSize": { "x": 10, "y": 13, "w": 46, "h": 28 },
+    "sourceSize": { "w": 64, "h": 64 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "http://www.aseprite.org/",
+  "version": "1.2.40-x64",
+  "image": "Blob.png",
+  "format": "RGBA8888",
+  "size": { "w": 184, "h": 28 },
+  "scale": "1",
+  "frameTags": [
+   { "name": "Idle", "from": 0, "to": 3, "direction": "pingpong" }
+  ]
+ }
+}
