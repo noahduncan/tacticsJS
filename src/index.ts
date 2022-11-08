@@ -22,21 +22,19 @@ const controls = new OrbitControls( camera, renderer.domElement );
 const axesHelper = new THREE.AxesHelper(10);
 scene.add(axesHelper);
 
-const xTiles = 10;
-const yTiles = 5;
 const maxHeight = 5;
 
-const map = window.map = Map.generateRandom(xTiles, yTiles, maxHeight);
+const map = window.map = Map.generateRandom(10, 5, maxHeight);
 const unit = window.unit = new BasicUnit(0xff0000);
 Map.render(map, scene);
 scene.add(window.unit.mesh);
 map.placeUnit(new Map.Coordinate(5, 2), unit);
 
-camera.position.x = xTiles / 2;
-camera.position.y = -5;
+camera.position.x = map.width / 2;
+camera.position.y = map.length / 2;;
 camera.position.z = maxHeight * 1;
 
-const target = new THREE.Vector3(xTiles/2, yTiles/2, maxHeight/2);
+const target = new THREE.Vector3(map.width / 2, map.length / 2, maxHeight / 2);
 camera.lookAt(target);
 controls.target = target
 controls.update();
@@ -66,13 +64,13 @@ function onDocumentKeyDown(event: KeyboardEvent) {
                 to = new Map.Coordinate(Math.max(0, from.x - 1), from.y);
                 break;
             case 'ArrowRight':
-                to = new Map.Coordinate(Math.min(xTiles-1, from.x + 1), from.y)
+                to = new Map.Coordinate(Math.min(map.width, from.x + 1), from.y)
                 break;
             case 'ArrowDown':
                 to = new Map.Coordinate(from.x, Math.max(0, from.y - 1));
                 break;
             case 'ArrowUp':
-                to = new Map.Coordinate(from.x, Math.min(yTiles-1, from.y + 1));
+                to = new Map.Coordinate(from.x, Math.min(map.length, from.y + 1));
                 break;
         }
     }
