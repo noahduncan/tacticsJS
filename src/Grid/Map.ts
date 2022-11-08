@@ -146,26 +146,24 @@ export function generateRandom(width: number, length: number, maxHeight: number)
         map.locations.push([]);
         for (let j = 0; j < length; j++) {
             let height: number = randInt(1, maxHeight);
-            let terrain: TerrainType.Terrain;
-            switch(randomProperty(TerrainType.Type)) {
-                case TerrainType.Type.Dirt:
-                    terrain = new Dirt();
-                    break;
-                case TerrainType.Type.Grass:
-                    terrain = new Grass();
-                    break;
-                case TerrainType.Type.Snow:
-                    terrain = new Snow();
-                    break;
-                default:
-                    throw new Error('Invalid TerrainType.Type requested.');
-            }
-            const location = new Location(i, j, height, terrain);
-            map.locations[i].push(location);
+            map.locations[i].push(new Location(i, j, height, randomTerrainType()));
         }
     }
 
     return map;
+}
+
+function randomTerrainType(): TerrainType.Terrain {
+    switch (randomProperty(TerrainType.Type)) {
+        case TerrainType.Type.Dirt:
+            return new Dirt();
+        case TerrainType.Type.Grass:
+            return new Grass();
+        case TerrainType.Type.Snow:
+            return new Snow();
+        default:
+            throw new Error('Invalid TerrainType.Type requested.');
+    }
 }
 
 export function render(map: Map, scene: Scene) {
