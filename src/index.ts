@@ -24,8 +24,8 @@ scene.add(axesHelper);
 
 const maxHeight = 5;
 
-const map = window.map = Map.generateRandom(10, 5, maxHeight);
-const unit = window.unit = new BasicUnit(0xff0000);
+const map = window.map = Map.generate2DRamp(maxHeight);
+const unit = window.unit = new BasicUnit(0xffd008);
 Map.render(map, scene);
 scene.add(window.unit.mesh);
 map.placeUnit(new Map.Coordinate(5, 2), unit);
