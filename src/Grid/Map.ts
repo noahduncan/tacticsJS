@@ -153,6 +153,48 @@ export function generateRandom(width: number, length: number, maxHeight: number)
     return map;
 }
 
+export function generateRamp(width: number, height: number): Map {
+    let length = height * 2;
+    const map = new Map(length, width);
+
+    let currentHeight: number = height;
+    for (let i = 0; i < width; i++) {
+        map.locations.push([]);
+        for (let j = 0; j < length; j++) {
+            map.locations[i].push(new Location(i, j, currentHeight, randomTerrainType()));
+        }
+        currentHeight -= 0.5;
+    }
+
+    return map;
+}
+
+export function generate2DRamp(height: number): Map {
+    let sideLength = height * 2;
+    const map = new Map(sideLength, sideLength);
+
+    // Prepopulate the map with empty locations.
+    for (let i = 0; i <= sideLength; i++) {
+        let row = [];
+        for (let j = 0; j < sideLength; j++) {
+            row.push(null)
+        }
+        map.locations.push(row);
+    }
+
+    let currentHeight: number = 0;
+    for (let d = 0; d <= sideLength; d++) {
+        map.locations[d][d] = new Location(d, d, currentHeight, randomTerrainType());
+        for (let i = d - 1; i >= 0; i--) {
+            map.locations[d][i] = new Location(d, i, currentHeight, randomTerrainType());
+            map.locations[i][d] = new Location(i, d, currentHeight, randomTerrainType());
+        }
+        currentHeight += 0.5;
+    }
+
+    return map;
+}
+
 function randomTerrainType(): TerrainType.Terrain {
     switch (randomProperty(TerrainType.Type)) {
         case TerrainType.Type.Dirt:
