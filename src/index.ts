@@ -1,23 +1,23 @@
 import * as THREE from 'three';
 import * as Map from "./Grid/Map";
-import {BasicUnit, Unit} from "./Unit/Unit";
-import {Material} from "three";
-import {GUI} from 'dat.gui';
-import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import { BasicUnit, Unit } from "./Unit/Unit";
+import { Material } from "three";
+import { GUI } from 'dat.gui';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 declare global {
     interface Window { map: Map.Map, unit: Unit }
 }
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-const controls = new OrbitControls( camera, renderer.domElement );
+const controls = new OrbitControls(camera, renderer.domElement);
 
 const axesHelper = new THREE.AxesHelper(10);
 scene.add(axesHelper);
@@ -49,9 +49,9 @@ unitFolder.add(unit.stats, 'movement', 0, 1000, 1).listen();
 unitFolder.open();
 
 function animate() {
-    requestAnimationFrame( animate );
+    requestAnimationFrame(animate);
     controls.update();
-    renderer.render( scene, camera );
+    renderer.render(scene, camera);
 }
 
 document.addEventListener("keydown", onDocumentKeyDown, false);

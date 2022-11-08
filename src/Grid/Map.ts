@@ -4,14 +4,14 @@
 // Terrain types have a three.js material.
 // Terrain Types may have a modifier: e.g. difficult terrain or impassible.
 
-import {randInt} from "three/src/math/MathUtils";
+import { randInt } from "three/src/math/MathUtils";
 import * as THREE from "three";
 import * as TerrainType from './TerrainTypes/TerrainType';
 import Dirt from "./TerrainTypes/Dirt";
 import Grass from "./TerrainTypes/Grass";
 import Snow from "./TerrainTypes/Snow";
-import {Unit} from "../Unit/Unit";
-import {Scene} from "three";
+import { Unit } from "../Unit/Unit";
+import { Scene } from "three";
 
 class Location {
     x: number;
@@ -34,22 +34,22 @@ class Location {
 
     private generateMesh() {
         this.geometry = new THREE.BoxGeometry(1, 1, this.height);
-        this.geometry.translate(0.5, 0.5, 0.5*this.height);
+        this.geometry.translate(0.5, 0.5, 0.5 * this.height);
 
         this.mesh = new THREE.Mesh(this.geometry, this.terrain.material);
         this.mesh.position.x = this.x;
         this.mesh.position.y = this.y;
 
         const geo = new THREE.EdgesGeometry(this.mesh.geometry);
-        const mat = new THREE.LineBasicMaterial( { color: 0x0000000 } );
-        const wireframe = new THREE.LineSegments( geo, mat);
+        const mat = new THREE.LineBasicMaterial({ color: 0x0000000 });
+        const wireframe = new THREE.LineSegments(geo, mat);
         this.mesh.add(wireframe);
     }
 }
 
 function randomProperty(obj: any) {
     const keys = Object.keys(obj);
-    return obj[keys[randInt(0, keys.length -1)]];
+    return obj[keys[randInt(0, keys.length - 1)]];
 }
 
 /**
@@ -74,7 +74,7 @@ export class Map {
         this.length = length;
     }
 
-    placeUnit(coordinate: Coordinate, unit: Unit|null) {
+    placeUnit(coordinate: Coordinate, unit: Unit | null) {
         let location = this.locations[coordinate.x][coordinate.y];
         if (location.unit !== null) {
             throw new Error('Cannot place unit, location is already occupied.');
@@ -105,7 +105,7 @@ export class Map {
         }
 
         let unit = this.getLocation(from).unit;
-        let xyMovementCost = Math.abs(to.x - from.x) + Math.abs(to.y - from .y);
+        let xyMovementCost = Math.abs(to.x - from.x) + Math.abs(to.y - from.y);
         let jumpMovementCost = Math.ceil(Math.abs(this.getLocation(to).height - this.getLocation(from).height));
 
         let totalMovementCost = xyMovementCost + Math.max(0, jumpMovementCost - unit.jump);
