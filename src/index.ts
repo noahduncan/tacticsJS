@@ -80,7 +80,7 @@ function onDocumentKeyDown(event: KeyboardEvent) {
                 break;
         }
     }
-    if (from != to) {
+    if (to && !from.equals(to)) {
         map.moveUnit(from, to);
         locationMaterial.transparent = true;
         locationMaterial.opacity = 0.25;

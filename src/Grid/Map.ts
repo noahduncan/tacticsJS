@@ -63,6 +63,10 @@ export class Coordinate {
         this.x = x;
         this.y = y;
     }
+
+    equals?(other: Coordinate): boolean {
+        return this.x === other.x && this.y === other.y;
+    }
 }
 
 export class Map {
