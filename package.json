@@ -1,14 +1,12 @@
 {
-  "dependencies": {
+  "devDependencies": {
     "@types/dat.gui": "^0.7.7",
     "@types/three": "^0.139.0",
     "dat.gui": "^0.7.9",
     "three": "^0.139.1",
     "ts-loader": "^9.2.8",
     "typescript": "^4.6.3",
-    "webpack": "^5.70.0"
-  },
-  "devDependencies": {
+    "webpack": "^5.70.0",
     "webpack-cli": "^4.9.2"
   }
 }
