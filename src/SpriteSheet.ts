@@ -75,16 +75,72 @@ export default class SpriteSheet {
     this.imageFile = "src/assets/sprites/blob/" + this.raw.meta.image;
   }
 
-  getSprite(name: string) {
-    const sprite = this.sets[name]
+  getSprite(name: string, animationName?: string) {
+    const frames = this.sets[name]
+    const animation = this.animations.find(a => a.name === animationName) ?? this.animations[0];
 
+    // Each sprite gets its own texture so its offset can be animated independently.
     const texture = new TextureLoader().load(this.imageFile);
     texture.magFilter = NearestFilter;
-    texture.repeat.set(sprite[0].uv_w, sprite[0].uv_h);
-    texture.offset.set(sprite[0].uv_x, sprite[0].uv_y);
 
     const spriteMaterial = new SpriteMaterial({ map: texture })
 
-    return new Sprite(spriteMaterial)
+    return new AnimatedSprite(new Sprite(spriteMaterial), frames, animation);
+  }
+}
+
+// Wraps a Sprite rather than extending it: with an ES5 target, TypeScript can't subclass three's native ES classes.
+export class AnimatedSprite {
+  sprite: Sprite
+  frames: UVFrame[]
+  animation: AnimationSpec
+  currentFrame: number
+  elapsed = 0
+  // +1 or -1; only flips for pingpong animations.
+  step: number
+
+  constructor(sprite: Sprite, frames: UVFrame[], animation?: AnimationSpec) {
+    this.sprite = sprite;
+    this.frames = frames;
+    this.animation = animation ?? { name: "default", from: 0, to: frames.length - 1, direction: "forward" };
+    this.step = this.animation.direction === "reverse" ? -1 : 1;
+    this.currentFrame = this.step === 1 ? this.animation.from : this.animation.to;
+    this.showFrame();
+  }
+
+  // Advance the animation by deltaMs milliseconds.
+  update(deltaMs: number) {
+    this.elapsed += deltaMs;
+    while (this.elapsed >= this.frames[this.currentFrame].duration) {
+      this.elapsed -= this.frames[this.currentFrame].duration;
+      this.advance();
+    }
+    this.showFrame();
+  }
+
+  private advance() {
+    const { from, to, direction } = this.animation;
+    if (from === to) {
+      return;
+    }
+
+    let next = this.currentFrame + this.step;
+    if (next > to || next < from) {
+      if (direction === "pingpong") {
+        this.step = -this.step;
+        next = this.currentFrame + this.step;
+      } else {
+        next = this.step === 1 ? from : to;
+      }
+    }
+    this.currentFrame = next;
+  }
+
+  private showFrame() {
+    const frame = this.frames[this.currentFrame];
+    const texture = this.sprite.material.map;
+    texture.repeat.set(frame.uv_w, frame.uv_h);
+    // Aseprite measures y from the top of the sheet, three.js UVs from the bottom.
+    texture.offset.set(frame.uv_x, 1 - frame.uv_y - frame.uv_h);
   }
 }

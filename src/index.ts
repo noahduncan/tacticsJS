@@ -5,18 +5,18 @@ import { Material, Sprite, SpriteMaterial, TextureLoader } from "three";
 import { GUI } from 'dat.gui';
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as sprites from "./assets/sprites/blob/Blob.json";
-import SpriteSheet from "./SpriteSheet"
+import SpriteSheet, { AnimatedSprite } from "./SpriteSheet"
 
 let spriteSheet = new SpriteSheet(sprites);
 declare global {
-    interface Window { map: Map.Map, unit: Unit, sprite: Sprite }
+    interface Window { map: Map.Map, unit: Unit, sprite: AnimatedSprite }
 }
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-const sprite = window.sprite = spriteSheet.getSprite("Blob")
-scene.add(sprite);
+const sprite = window.sprite = spriteSheet.getSprite("Blob", "Idle")
+scene.add(sprite.sprite);
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -31,9 +31,9 @@ const maxHeight = 5;
 
 const map = window.map = Map.generate2DRamp(maxHeight);
 const unit = window.unit = new BasicUnit(0xffd008);
-// Map.render(map, scene);
-// scene.add(window.unit.mesh);
-// map.placeUnit(new Map.Coordinate(Math.round(map.width / 2), Math.round(map.length / 2)), unit);
+Map.render(map, scene);
+scene.add(window.unit.mesh);
+map.placeUnit(new Map.Coordinate(Math.round(map.width / 2), Math.round(map.length / 2)), unit);
 
 camera.position.x = map.width / 2;
 camera.position.y = -map.length / 2;
@@ -54,8 +54,10 @@ const unitFolder = gui.addFolder('Unit');
 unitFolder.add(unit.stats, 'movement', 0, 1000, 1).listen();
 unitFolder.open();
 
+const clock = new THREE.Clock();
 function animate() {
     requestAnimationFrame(animate);
+    sprite.update(clock.getDelta() * 1000);
     controls.update();
     renderer.render(scene, camera);
 }
